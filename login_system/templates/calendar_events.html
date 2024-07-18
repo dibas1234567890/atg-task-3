@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calendar Events</title>
+</head>
+<body>
+    <h1>Calendar Events</h1>
+    <ul>
+        {% for event in events %}
+            <li>{{ event.summary }} - {{ event.start_time }} to {{ event.end_time }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
