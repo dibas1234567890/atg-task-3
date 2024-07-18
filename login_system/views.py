@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
 from django.urls import reverse
 from rest_framework import status
@@ -13,7 +13,16 @@ from login_system.models import BlogModel, Category, CustomerUserProfile
 from login_system.serializers import BlogSerializer, CategorySerializer, CustomLoginSerializer, CustomRegisterSerializer
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from oauth2_provider.views.generic import ProtectedResourceView
+from .models import Event
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+import datetime
+import pytz
 
 class CustomRegisterView(APIView):
     def post(self, request):
@@ -178,3 +187,65 @@ class BlogsByCategory(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Category.DoesNotExist:
                 return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+
+class CalendarView(ProtectedResourceView):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("This is your calendar view")
+
+def fetch_events(request):
+    try:
+        # Load credentials from the token file
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+        # Refresh the credentials if they have expired
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+
+        # Build the Google Calendar service
+        service = build('calendar', 'v3', credentials=creds)
+
+        # Get the current time in UTC format
+        now = datetime.datetime.utcnow().isoformat() + 'Z'  # RFC3339 timestamp
+
+        # Log the request URL and parameters
+        request_url = f"https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin={now}&maxResults=10&singleEvents=true&orderBy=startTime&alt=json"
+
+        # Fetch events from the primary calendar
+        events_result = service.events().list(
+            calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+            orderBy='startTime').execute()
+
+        events_data = events_result.get('items', [])
+
+        # Process the fetched events and save to the database
+        for event_data in events_data:
+            start_time = event_data['start'].get('dateTime', event_data['start'].get('date'))
+            end_time = event_data['end'].get('dateTime', event_data['end'].get('date'))
+            start_time = datetime.datetime.fromisoformat(start_time)
+            end_time = datetime.datetime.fromisoformat(end_time)
+            
+            # Convert to naive datetime objects if they are timezone-aware
+            if start_time.tzinfo is not None:
+                start_time = start_time.replace(tzinfo=None)
+            if end_time.tzinfo is not None:
+                end_time = end_time.replace(tzinfo=None)
+                
+            Event.objects.create(
+                summary=event_data.get('summary', ''),
+                start_time=start_time,
+                end_time=end_time
+            )
+
+        # Fetch all events from the database to display
+        events = Event.objects.all()
+        context = {'events': events}
+        return render(request, 'calendar_events.html', context)
+
+    except Exception as e:
+        return HttpResponse(f"An error occurred: {e}")
+
+if __name__ == '__main__':
+    fetch_events()

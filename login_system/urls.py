@@ -11,7 +11,8 @@ from login_system.views import (
     PatientDashboardView, 
     IndexView,
     UserView,
-    csrf_token_view
+    csrf_token_view,
+    fetch_events
 )
 from rest_framework_simplejwt import views as jwt_views
 
@@ -36,5 +37,7 @@ urlpatterns = [
           jwt_views.TokenRefreshView.as_view(), 
           name ='token_refresh'),
               path('csrf_token', csrf_token_view, name=''),
+
+    path('fetch-events/', fetch_events, name='fetch_events')
 
 ]

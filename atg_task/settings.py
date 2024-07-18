@@ -45,8 +45,13 @@ INSTALLED_APPS = [
         'rest_framework_simplejwt',
 
      'rest_framework_simplejwt.token_blacklist',
-         'rest_framework.authtoken'
+         'rest_framework.authtoken', 
+             'oauth2_provider',
+
 ]
+
+GOOGLE_TOKEN_FILE = 'token.json'
+
 
 MIDDLEWARE = [
             'corsheaders.middleware.CorsMiddleware',
@@ -124,7 +129,7 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
