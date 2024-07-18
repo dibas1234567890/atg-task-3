@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+   
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+   
+
+</head>
+{% block content %}
+{%  include 'header.html' %}
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 text-center  ">
+                <div class="card text-center">
+                    <div class="card-header text-center">
+                        User Registraion Form
+                    </div>
+                    <div class="card-body ">
+    <form action="" method="post" class="form">
+        {% csrf_token %}
+        {% for i in form %}
+        <table class="table  table-responsive">
+                <tr>
+                    <th>
+                        {{ i.label }}:
+        
+                    </th>
+                </tr>
+                <tr><td>{{ i }}</td></tr>
+                <tr><td>{{ i.errors }}</td></tr>
+                
+
+        {% endfor %}
+        <tr class="mt-5"><td><button class="btn btn-info mt-2 text-green"
+            type="submit">Submit</button>
+        </td></tr>
+</table>
+        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+</html>

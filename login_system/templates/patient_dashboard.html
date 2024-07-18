@@ -1,0 +1,63 @@
+{%  extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    
+
+</head>
+<body>
+    {% block content %}
+    {%  include 'header.html' %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center  ">
+                <div class="card text-center">
+                    <div class="card-header text-center">
+                        {{ request.user.user_type |title  }} Dashboard
+                    </div>
+                    <div class="card-body ">
+    <form action="" method="post" class="form">
+        {% csrf_token %}
+       
+        <table class="table  table-responsive">
+                <tr>
+                    <th>
+                        Profile Picture
+        
+                    </th>
+                    <th>
+                        Name
+        
+                    </th>
+                    <th>
+                        Address 
+        
+                    </th>
+                    <th>
+                        User Type
+                    </th>
+                    <th>
+                        Date Joined
+                    </th>
+                </tr>
+                <tr><td>{% if user_data.profile_picture  %} {{ user_data.profile_picture }} {% else %} {{ "no pic" }}{% endif %}</td>
+                    <td>{{ user_data.first_name |add:" " |add:user_data.last_name }}</td>
+                    <td>{{ user_data.address_line1|add:" " |add:user_data.city| add:" "  |add:user_data.state  |add:" " |add:user_data.pincode}}</td>
+                    <td>{{ user_data.user_type }}</td>
+                    <td>{{ user_data.date_joined }}</td>
+                </tr>
+                
+
+        
+</table>
+        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>{% endblock %}
+</html>
