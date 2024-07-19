@@ -1,4 +1,3 @@
-# login_system/urls.py
 from django.urls import path
 from login_system.views import (
     BlogView,
@@ -16,6 +15,8 @@ from login_system.views import (
 )
 from rest_framework_simplejwt import views as jwt_views
 
+from django.conf import settings
+from django.conf.urls.static import static
 app_name = 'home'
 
 urlpatterns = [
@@ -40,4 +41,4 @@ urlpatterns = [
 
     path('fetch-events/', fetch_events, name='fetch_events')
 
-]
+] 

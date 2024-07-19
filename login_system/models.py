@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager as AbstractUserManager
 from django.contrib.auth.base_user import BaseUserManager
@@ -20,7 +21,7 @@ class CustomUserManager(AbstractUserManager):
 class CustomerUserProfile(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics', blank=True, null=True)
     username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(unique=True)
     password1 = models.CharField(max_length=100)
@@ -50,15 +51,7 @@ class BlogModel(models.Model):
     category = models.ForeignKey(Category,  on_delete=models.CASCADE)
     user = models.ForeignKey(CustomerUserProfile, on_delete=models.CASCADE,)
 
-
-
-
-
-
         
-
-        
-# calendar_integration/models.py
 from django.db import models
 
 class Event(models.Model):
@@ -66,3 +59,18 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
 
+class Appointment(models.Model):
+    doctor = models.ForeignKey(CustomerUserProfile, on_delete=models.CASCADE)
+    speciality = models.CharField(max_length=100)
+    date = models.DateField()
+    start_time = models.TimeField()
+
+    def save(self, *args, **kwargs):
+        if self.start_time:
+            start = timezone.datetime.combine(self.date, self.start_time)
+            end = start + timezone.timedelta(minutes=45)
+            self.end_time = end.time()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Appointment with Dr. {self.doctor} on {self.date} at {self.start_time}"

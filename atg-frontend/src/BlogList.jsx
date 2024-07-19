@@ -25,7 +25,7 @@ const BlogList = () => {
                     fetchCategoryData(blog.category);
                 });
             } catch (error) {
-                setError('Error fetching blogs'); 
+                setError(`Error fetching blogs ${error.message}`); 
             }
         };
         fetchUserBlogs(); 

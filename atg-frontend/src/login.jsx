@@ -34,6 +34,7 @@ const LoginForm = () => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
             navigate("/api/blogosphere"); 
+            window.location.reload()        
         } catch (error) {
             setError("Invalid username or password");
         }

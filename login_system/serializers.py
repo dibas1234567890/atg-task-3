@@ -88,3 +88,8 @@ class BlogSerializer(serializers.Serializer):
         return blog_instance
 
 
+class UserSerailizer(serializers.ModelSerializer):
+    class Meta: 
+        model = CustomerUserProfile
+        fields = "__all__"
+        

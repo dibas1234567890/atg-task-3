@@ -10,6 +10,7 @@ import CategoryForm from './category';
 import BlogList from './BlogList';
 import BlogsByCategory from "./BlogsByCategory";
 import Navbar from './NavBar';
+import Dashboard from './Dashboard';
 
 function App() {
 
@@ -39,6 +40,8 @@ function App() {
                     <Route path="/api/blogpost" element={isLoggedIn ? <BlogForm /> : <Navigate to="/api/login" />} />
                     <Route path="/api/categories" element={isLoggedIn ? <CategoryForm /> : <Navigate to="/api/login" />} />
                     <Route path="/api/blogosphere" element={<BlogList />} />
+                    <Route path="/api/patient_dashboard" element={ <Dashboard />} />
+
                     <Route path="/api/blogs_by_category/:category_id" element={<BlogsByCategory />} />
                 </Routes>
             </BrowserRouter>
